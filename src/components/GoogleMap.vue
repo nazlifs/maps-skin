@@ -1,85 +1,71 @@
 <template>
   <div>
-    <GoogleMap 
-      :api-key="googleMapsApiKey" 
-      style="width: 100%; height: 500px" 
-      :center="center" 
-      :zoom="15" 
-      @ready="onMapReady">
-    </GoogleMap>
+    <div id="map" style="width: 100%; height: 500px;"></div>
   </div>
 </template>
 
 <script>
-import { GoogleMap } from 'vue3-google-map';
-import axios from 'axios';
-
 export default {
-  components: {
-    GoogleMap,
-  },
-  data() {
-    return {
-      googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAP_API_KEY,
-      center: {
-        lat: -6.1751,
-        lng: 106.8650,
-      },
-      map: null,
-      markers: [],
-    };
+  name: 'GoogleMap',
+  mounted() {
+    if (window.google) {
+      this.initMap();
+    } else {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAP_API_KEY}&callback=initMap`;
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+
+      window.initMap = this.initMap;
+    }
   },
   methods: {
-    async fetchAccommodations() {
-      console.log("Fetching accomodation..")
-      try {
-        const response = await axios.get(
-          "https://mapping-staging-11d8643b0e13.herokuapp.com/accommodations.json?_variant=map_data"
-        );
-        console.log("Response received:", response)
-        console.log("Response received:", response.data)
-        const accommodations = response.data;
+    initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
 
-        // Tambahkan marker untuk setiap akomodasi
-        accommodations.forEach((accommodation) => {
-          if (accommodation.latitude && accommodation.longitude) {
-            const marker = new google.maps.marker.AdvancedMarkerElement({
-              map: this.map,
-              position: {
-                lat: parseFloat(accommodation.latitude),
-                lng: parseFloat(accommodation.longitude),
-              },
-              title: accommodation.name || "Accommodation",
+            const map = new google.maps.Map(document.getElementById('map'), {
+              center: { lat: latitude, lng: longitude }, 
+              zoom: 14,
             });
 
-            this.markers.push(marker);
+            new google.maps.Marker({
+              position: { lat: latitude, lng: longitude },
+              map: map,
+              title: 'Your Location',
+            });
+          },
+          () => {
+            alert("Gagal mendapatkan lokasi Anda.");
+            this.loadDefaultMap();
           }
-        });
-      } catch (error) {
-        console.error("Error fetching accommodations:", error);
+        );
+      } else {
+        alert("Geolocation tidak didukung oleh browser Anda.");
+        this.loadDefaultMap();
       }
     },
-    onMapReady(map) {
-      this.map = map;
-      this.fetchAccommodations(); // Fetch data saat peta siap
+    loadDefaultMap() {
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: -6.200000, lng: 106.816666 }, 
+        zoom: 10,
+      });
+
+      new google.maps.Marker({
+        position: { lat: -6.200000, lng: 106.816666 },
+        map: map,
+        title: 'Jakarta',
+      });
     },
-  },
-  created() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.center = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-        },
-        (error) => {
-          console.error(error);
-        }
-      );
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-    }
   },
 };
 </script>
+
+<style scoped>
+#map {
+  border: 1px solid #ccc;
+}
+</style>

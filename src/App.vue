@@ -1,46 +1,41 @@
-<script setup>
-import GoogleMap from './components/GoogleMap.vue';
-</script>
-
 <template>
-  <div class="container">
-    <header>
-      <h1>Welcome to My Google Maps App</h1>
-    </header>
-    <main>
-      <GoogleMap />
-    </main>
+  <div id="app">
+    <h1>Google Maps with Location Form</h1>
+    <!-- Komponen Form -->
+    <MapForm @update-location="updateLocation" />
+
+    <!-- Komponen Peta -->
+    <GoogleMap :location="currentLocation" />
   </div>
 </template>
 
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
-  color: #333;
-}
+<script>
+import MapForm from './components/MapForm.vue';
+import GoogleMap from './components/GoogleMap.vue';
 
-header {
-  margin-bottom: 2rem;
+export default {
+  name: 'App',
+  components: {
+    MapForm,
+    GoogleMap,
+  },
+  data() {
+    return {
+      currentLocation: { lat: -6.200000, lng: 106.816666 }, // Default lokasi (Jakarta)
+    };
+  },
+  methods: {
+    updateLocation(newLocation) {
+      this.currentLocation = newLocation; // Perbarui lokasi berdasarkan data dari form
+    },
+  },
+};
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   text-align: center;
-}
-
-header h1 {
-  font-size: 2rem;
-  color: #333;
-}
-
-main {
-  width: 100vh;
-  max-width: 1200px;
-  padding: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  border-radius: 8px;
+  margin-top: 20px;
 }
 </style>
