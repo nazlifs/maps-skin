@@ -8,7 +8,7 @@ import GoogleMap from './components/GoogleMap.vue';
       <h1>Welcome to My Google Maps App</h1>
     </header>
     <main>
-      <GoogleMap msg="Google Maps Component" />
+      <GoogleMap />
     </main>
   </div>
 </template>
