@@ -61,7 +61,7 @@ export default {
   methods: {
     async fetchLocationOptions() {
       if (this.searchQuery.length > 2) {
-        const apiKey = "YOUR_GOOGLE_API_KEY"; // Ganti dengan API key Anda
+        const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY; 
         const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${this.searchQuery}&key=${apiKey}`;
 
         try {
@@ -75,7 +75,7 @@ export default {
     },
     async storeLocationData() {
       if (this.selectedLocation) {
-        const apiKey = "YOUR_GOOGLE_API_KEY"; // Ganti dengan API key Anda
+        const apiKey = "YOUR_GOOGLE_API_KEY";
         const placeId = this.selectedLocation.place_id;
         const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
 
@@ -94,12 +94,10 @@ export default {
     },
     handleSubmit() {
       console.log("Submitting data:", this.locationData);
-      // Form submission will be handled by the form action
     },
   },
 };
 </script>
 
 <style scoped>
-/* Semua styling sudah dilakukan dengan Tailwind CSS */
 </style>

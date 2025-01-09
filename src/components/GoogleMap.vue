@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="map" style="width: 100%; height: 500px;"></div>
+    <div id="map" style="width: 100%; height: 500px; position: relative;"></div>
   </div>
 </template>
 
@@ -21,7 +21,7 @@ export default {
     }
   },
   methods: {
-    initMap() {
+    async initMap() {
       const customStyles = [
         {
           elementType: "geometry",
@@ -54,7 +54,7 @@ export default {
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
+          async (position) => {
             const { latitude, longitude } = position.coords;
 
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -68,6 +68,8 @@ export default {
               map: map,
               title: "Your Location",
             });
+
+            await this.addAccommodations(map);
           },
           () => {
             alert("Gagal mendapatkan lokasi Anda.");
@@ -91,6 +93,51 @@ export default {
         map: map,
         title: "Jakarta",
       });
+
+      this.addAccommodations(map);
+    },
+    async addAccommodations(map) {
+      try {
+        const response = await fetch('/api/accommodations.json?_variant=map_data');
+        
+        if (!response.ok) {
+          throw new Error("Gagal memuat data akomodasi.");
+        }
+
+        const accommodations = await response.json();
+        console.log(accommodations);
+        
+        let accommodationList = [];
+        if (Array.isArray(accommodations.records)) {
+          accommodationList = accommodations.records;
+        } else {
+          throw new Error("Data akomodasi tidak sesuai format yang diharapkan");
+        }
+
+        accommodationList.forEach((accommodation) => {
+          const { locationLatitude, locationLongitude, name } = accommodation;
+          const lat = parseFloat(locationLatitude);
+          const lng = parseFloat(locationLongitude);
+
+          console.log("Adding marker at", lat, lng);
+          console.log("Parsed lat:", lat, "Parsed lng:", lng);
+
+          if (!isNaN(lat) && !isNaN(lng)) {
+            setTimeout(() => {
+              new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                title: name || "Akomodasi",
+              });
+            }, 500); // Tunggu setengah detik untuk memastikan peta ter-load
+          } else {
+            console.warn("Koordinat tidak valid:", lat, lng);
+          }
+        });
+      } catch (error) {
+        console.error(error.message);
+        alert("Terjadi kesalahan saat memuat data akomodasi.");
+      }
     },
   },
 };
@@ -98,6 +145,7 @@ export default {
 
 <style scoped>
 #map {
+  background-color: #f0f0f0;
   border: 1px solid #ccc;
 }
 </style>

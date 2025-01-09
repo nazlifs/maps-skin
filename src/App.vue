@@ -1,32 +1,31 @@
 <template>
   <div id="app">
     <h1>Google Maps with Location Form</h1>
-    <!-- Komponen Form -->
-    <MapForm @update-location="updateLocation" />
 
-    <!-- Komponen Peta -->
+    <!-- <MapForm @update-location="updateLocation" /> -->
+
     <GoogleMap :location="currentLocation" />
   </div>
 </template>
 
 <script>
-import MapForm from './components/MapForm.vue';
+// import MapForm from './components/MapForm.vue';
 import GoogleMap from './components/GoogleMap.vue';
 
 export default {
   name: 'App',
   components: {
-    MapForm,
+    // MapForm,
     GoogleMap,
   },
   data() {
     return {
-      currentLocation: { lat: -6.200000, lng: 106.816666 }, // Default lokasi (Jakarta)
+      currentLocation: { lat: -6.200000, lng: 106.816666 }, 
     };
   },
   methods: {
     updateLocation(newLocation) {
-      this.currentLocation = newLocation; // Perbarui lokasi berdasarkan data dari form
+      this.currentLocation = newLocation;
     },
   },
 };
