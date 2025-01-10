@@ -115,7 +115,7 @@ export default {
         }
 
         accommodationList.forEach((accommodation) => {
-          const { locationLatitude, locationLongitude, name } = accommodation;
+          const { locationLatitude, locationLongitude, locationName } = accommodation;
           const lat = parseFloat(locationLatitude);
           const lng = parseFloat(locationLongitude);
 
@@ -127,9 +127,9 @@ export default {
               new google.maps.Marker({
                 position: { lat: lat, lng: lng },
                 map: map,
-                title: name || "Akomodasi",
+                title: locationName || "Akomodasi",
               });
-            }, 500); // Tunggu setengah detik untuk memastikan peta ter-load
+            }, 500);
           } else {
             console.warn("Koordinat tidak valid:", lat, lng);
           }

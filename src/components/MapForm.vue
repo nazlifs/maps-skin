@@ -75,7 +75,7 @@ export default {
     },
     async storeLocationData() {
       if (this.selectedLocation) {
-        const apiKey = "YOUR_GOOGLE_API_KEY";
+        const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
         const placeId = this.selectedLocation.place_id;
         const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
 
