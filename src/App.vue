@@ -15,6 +15,8 @@
 <script>
 import MapForm from './components/MapForm.vue';
 import GoogleMap from './components/GoogleMap.vue';
+import 'font-awesome/css/font-awesome.css';
+
 
 export default {
   name: 'App',

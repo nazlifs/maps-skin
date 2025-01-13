@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target:
-          " https://mapping-staging-11d8643b0e13.herokuapp.com/accommodations.json?km_radius=5&latitude=144.667088&longitude=-37.855641",
+          " https://mapping-staging-11d8643b0e13.herokuapp.com/accommodations.json?km_radius=5&latitude=-37.855641&longitude=144.667088",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
