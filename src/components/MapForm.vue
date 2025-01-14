@@ -33,11 +33,25 @@
         </li>
       </ul>
 
+      <input type="hidden" name="location_name" value="locationData.name" />
+      <input
+        type="hidden"
+        name="location_longitude"
+        value="locationData.longitude"
+      />
+      <input
+        type="hidden"
+        name="location_latitude"
+        value="locationData.latitude"
+      />
+
       <button
         type="submit"
+        disable="isLoading"
         class="w-full py-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        :disable="isLoading"
       >
-        Submit
+        {{ isLoading ? "Loading..." : "Submit" }}
       </button>
     </form>
   </div>
@@ -55,11 +69,20 @@ export default {
         longitude: "",
         latitude: "",
       },
+      isLoading: false,
     };
   },
+  watch: {
+    searchQuery(newQuery) {
+      if (!newQuery) {
+        this.locationOptions = [];
+      }
+    },
+  },
+
   methods: {
     async fetchLocationOptions() {
-      if (this.searchQuery.length > 2) {
+      if (this.searchQuery.length > 0) {
         const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
         const url = `maps-api/maps/api/place/autocomplete/json?input=${this.searchQuery}&key=${apiKey}`;
 
@@ -70,6 +93,8 @@ export default {
         } catch (error) {
           console.error("Error fetching location options:", error);
         }
+      } else {
+        this.locationOptions = [];
       }
     },
     async storeLocationData() {
@@ -95,15 +120,27 @@ export default {
     selectLocation(option) {
       this.selectedLocation = option;
       console.log("selected location", option);
+      this.searchQuery = option.description;
     },
 
-    handleSubmit() {
-      const locationData = {
-        name: this.locationData.name,
-        longitude: this.locationData.longitude,
-        latitude: this.locationData.latitude,
-      };
-      console.log("Submitting data:", this.locationData);
+    async handleSubmit() {
+      this.isLoading = true;
+      await this.storeLocationData();
+      console.log("submit data:", this.locationData);
+
+      setTimeout(() => {
+        this.isLoading = false;
+        console.log("submit selesai");
+
+        (this.searchQuery = ""),
+          (this.locationData = []),
+          (this.selectedLocation = null);
+        this.locationData = {
+          name: "",
+          longitude: "",
+          latitude: "",
+        };
+      }, 2000);
     },
   },
 };
