@@ -4,11 +4,11 @@
       @submit.prevent="handleSubmit"
       action="https://mapping-staging-11d8643b0e13.herokuapp.com/accommodations/new?_variant=api_test"
       method="POST"
-      class="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg"
+      class="w-full max-w-lg bg-white p-6 rounded-lg shadow-lg text-black"
     >
-      <label for="address" class="block text-gray-700 font-semibold mb-2"
-        >Enter Address:</label
-      >
+      <label for="address" class="block text-gray-700 font-semibold mb-2">
+        Enter Address:
+      </label>
       <input
         type="text"
         id="address"
@@ -19,39 +19,19 @@
         class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
-      <label
+      <ul
         v-if="locationOptions.length > 0"
-        for="location"
-        class="block text-gray-700 font-semibold mt-4 mb-2"
-        >Select Location:</label
+        class="border border-gray-300 rounded-lg mt-2 max-h-40 overflow-auto"
       >
-      <select
-        v-if="locationOptions.length > 0"
-        id="location"
-        v-model="selectedLocation"
-        @change="storeLocationData"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option
+        <li
           v-for="option in locationOptions"
           :key="option.place_id"
-          :value="option"
+          @click="selectLocation(option)"
+          class="p-2 hover:bg-gray-200 cursor-pointer"
         >
           {{ option.description }}
-        </option>
-      </select>
-
-      <input type="hidden" name="location_name" :value="locationData.name" />
-      <input
-        type="hidden"
-        name="location_longitude"
-        :value="locationData.longitude"
-      />
-      <input
-        type="hidden"
-        name="location_latitude"
-        :value="locationData.latitude"
-      />
+        </li>
+      </ul>
 
       <button
         type="submit"
@@ -81,7 +61,7 @@ export default {
     async fetchLocationOptions() {
       if (this.searchQuery.length > 2) {
         const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
-        const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${this.searchQuery}&key=${apiKey}`;
+        const url = `maps-api/maps/api/place/autocomplete/json?input=${this.searchQuery}&key=${apiKey}`;
 
         try {
           const response = await fetch(url);
@@ -96,7 +76,7 @@ export default {
       if (this.selectedLocation) {
         const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
         const placeId = this.selectedLocation.place_id;
-        const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
+        const url = `maps-api/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
 
         try {
           const response = await fetch(url);
@@ -111,7 +91,18 @@ export default {
         }
       }
     },
+
+    selectLocation(option) {
+      this.selectedLocation = option;
+      console.log("selected location", option);
+    },
+
     handleSubmit() {
+      const locationData = {
+        name: this.locationData.name,
+        longitude: this.locationData.longitude,
+        latitude: this.locationData.latitude,
+      };
       console.log("Submitting data:", this.locationData);
     },
   },
