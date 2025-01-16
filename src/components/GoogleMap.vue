@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       map: null,
-      center: { lat: -6.2, lng: 106.816666 },
+      center: { lat: -37.80476169700978, lng: 144.96632398787355 },
       markers: [],
       accommodations: [],
       transportMarkers: [],
@@ -71,12 +71,19 @@ export default {
         title: "Your Location",
       });
 
-      this.loadAccomodations();
-      this.loadpublicTransport();
+      this.loadAllNearbyPlace();
 
       this.map.addListener("idle", () => {
         this.updateVisibleMarkers();
       });
+    },
+
+    async loadAllNearbyPlace() {
+      await this.loadAccomodations();
+      await this.loadpublicTransport();
+      // await this.loadHospitals();
+      // await this.loadBusStops();
+      // await this.loadTrainStation();
     },
 
     async loadpublicTransport() {
@@ -90,11 +97,17 @@ export default {
         service.nearbySearch(
           {
             location: this.center,
-            radius: 10000,
-            type: ["bus_station", "subway_station", "train_station"],
+            radius: 2000,
+            type:
+              // "hospital",
+              // "pharmacy",
+              "transit_station",
+            // "subway_station",
+            // "train_station",
           },
           (result, status) => {
             console.log("google places status:", status);
+            console.log("data marker", result);
 
             if (status === google.maps.places.PlacesServiceStatus.OK) {
               this.transportMarkers.forEach((marker) => marker.setMap(null));
@@ -129,6 +142,162 @@ export default {
         alert("Terjadi kesalahan saat mengambil data transportasi.");
       }
     },
+
+    // async loadBusStops() {
+    //   try {
+    //     if (!google || !google.maps || !google.maps.places) {
+    //       throw new Error("Google Maps Places API tidak tersedia.");
+    //     }
+    //     const service = new google.maps.places.PlacesService(this.map);
+
+    //     console.log("center location:", this.center);
+    //     service.nearbySearch(
+    //       {
+    //         location: this.center,
+    //         radius: 2000, // Jarak pencarian, dalam meter
+    //         type: "bus_station", // Tipe untuk mencari halte bus
+    //       },
+    //       (result, status) => {
+    //         console.log("google places status:", status);
+    //         console.log("data marker bus station", result);
+
+    //         if (status === google.maps.places.PlacesServiceStatus.OK) {
+    //           this.transportMarkers.forEach((marker) => marker.setMap(null));
+    //           this.transportMarkers = [];
+
+    //           if (result && Array.isArray(result)) {
+    //             result.forEach((place) => {
+    //               if (place.geometry && place.geometry.location) {
+    //                 const marker = new google.maps.Marker({
+    //                   position: place.geometry.location,
+    //                   map: this.map,
+    //                   title: place.name,
+    //                   icon: "https://maps.google.com/mapfiles/ms/icons/yellow-dot.png", // Ganti ikon untuk halte bus
+    //                 });
+    //                 this.transportMarkers.push(marker);
+    //               }
+    //             });
+    //           } else {
+    //             console.error("Data halte bus tidak valid:", result);
+    //             alert(
+    //               "Data halte bus tidak sesuai dengan format yang diharapkan."
+    //             );
+    //           }
+    //         } else {
+    //           console.error(`Error fetching bus stop data: ${status}`);
+    //           alert(`Terjadi kesalahan dalam mencari halte bus: ${status}`);
+    //         }
+    //       }
+    //     );
+    //   } catch (error) {
+    //     console.error("Error fetching bus stops", error);
+    //     alert("Terjadi kesalahan saat mengambil data halte bus.");
+    //   }
+    // },
+
+    // async loadTrainStation() {
+    //   try {
+    //     if (!google || !google.maps || !google.maps.places) {
+    //       throw new Error("Google Maps Places API tidak tersedia.");
+    //     }
+    //     const service = new google.maps.places.PlacesService(this.map);
+
+    //     console.log("center location:", this.center);
+    //     service.nearbySearch(
+    //       {
+    //         location: this.center,
+    //         radius: 2000, // Jarak pencarian, dalam meter
+    //         type: "subway_station", // Tipe untuk mencari halte bus
+    //       },
+    //       (result, status) => {
+    //         console.log("google places status:", status);
+    //         console.log("data marker train station", result);
+
+    //         if (status === google.maps.places.PlacesServiceStatus.OK) {
+    //           this.transportMarkers.forEach((marker) => marker.setMap(null));
+    //           this.transportMarkers = [];
+
+    //           if (result && Array.isArray(result)) {
+    //             result.forEach((place) => {
+    //               if (place.geometry && place.geometry.location) {
+    //                 const marker = new google.maps.Marker({
+    //                   position: place.geometry.location,
+    //                   map: this.map,
+    //                   title: place.name,
+    //                   icon: "https://maps.google.com/mapfiles/ms/icons/purple-dot.png", // Ganti ikon untuk halte bus
+    //                 });
+    //                 this.transportMarkers.push(marker);
+    //               }
+    //             });
+    //           } else {
+    //             console.error("Data halte bus tidak valid:", result);
+    //             alert(
+    //               "Data halte bus tidak sesuai dengan format yang diharapkan."
+    //             );
+    //           }
+    //         } else {
+    //           console.error(`Error fetching bus stop data: ${status}`);
+    //           alert(`Terjadi kesalahan dalam mencari halte bus: ${status}`);
+    //         }
+    //       }
+    //     );
+    //   } catch (error) {
+    //     console.error("Error fetching bus stops", error);
+    //     alert("Terjadi kesalahan saat mengambil data halte bus.");
+    //   }
+    // },
+
+    // async loadHospitals() {
+    //   try {
+    //     if (!google || !google.maps || !google.maps.places) {
+    //       throw new Error("Google Maps Places API tidak tersedia.");
+    //     }
+    //     const service = new google.maps.places.PlacesService(this.map);
+
+    //     console.log("center location:", this.center);
+    //     service.nearbySearch(
+    //       {
+    //         location: this.center,
+    //         radius: 2000, // Jarak pencarian, dalam meter
+    //         type: "hospital", // Tipe untuk mencari rumah sakit
+    //       },
+    //       (result, status) => {
+    //         console.log("google places status:", status);
+    //         console.log("data marker hospital", result);
+
+    //         if (status === google.maps.places.PlacesServiceStatus.OK) {
+    //           this.transportMarkers.forEach((marker) => marker.setMap(null));
+    //           this.transportMarkers = [];
+
+    //           if (result && Array.isArray(result)) {
+    //             result.forEach((place) => {
+    //               if (place.geometry && place.geometry.location) {
+    //                 const marker = new google.maps.Marker({
+    //                   position: place.geometry.location,
+    //                   map: this.map,
+    //                   title: place.name,
+    //                   icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", // Ganti ikon untuk rumah sakit
+    //                 });
+    //                 this.transportMarkers.push(marker);
+    //               }
+    //             });
+    //           } else {
+    //             console.error("Data rumah sakit tidak valid:", result);
+    //             alert(
+    //               "Data rumah sakit tidak sesuai dengan format yang diharapkan."
+    //             );
+    //           }
+    //         } else {
+    //           console.error(`Error fetching hospital data: ${status}`);
+    //           alert(`Terjadi kesalahan dalam mencari rumah sakit: ${status}`);
+    //         }
+    //       }
+    //     );
+    //   } catch (error) {
+    //     console.error("Error fetching hospitals", error);
+    //     alert("Terjadi kesalahan saat mengambil data rumah sakit.");
+    //   }
+    // },
 
     async loadAccomodations() {
       try {
