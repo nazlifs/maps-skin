@@ -1,7 +1,16 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-})
+  server: {
+    proxy: {
+      "/api": {
+        target:
+          " https://mapping-staging-11d8643b0e13.herokuapp.com/accommodations.json?km_radius=5&latitude=-37.855641&longitude=144.667088",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
+});
