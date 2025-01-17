@@ -33,7 +33,6 @@ export default {
   methods: {
     moveToLocationHandler(lat, lng) {
       console.log(`Navigating to latitude: ${lat}, longitude: ${lng}`);
-      // Implementasikan logika navigasi di sini
     },
   },
 };
