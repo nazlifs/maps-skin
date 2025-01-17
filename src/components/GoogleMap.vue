@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="map" style="width: 100%; height: 500px; position: relative"></div>
+    <MapForm :moveToLocation="moveToLocation" />
   </div>
 </template>
 
@@ -9,6 +10,8 @@ import customStyles from "./mapStyle";
 import Homestay from "../assets/icons/homestay.svg";
 import Apartment from "../assets/icons/apartment.svg";
 import RoomingHouse from "../assets/icons/rooming-house.svg";
+import { Loader } from "@googlemaps/js-api-loader";
+import MapForm from "./MapForm.vue";
 
 export default {
   name: "GoogleMap",
@@ -76,6 +79,18 @@ export default {
       this.map.addListener("idle", () => {
         this.updateVisibleMarkers();
       });
+    },
+
+    moveToLocation(lat, lng) {
+      if (this) {
+        const newCenter = { lat, lng };
+        this.map.setCenter(newCenter);
+        new google.maps.Marker({
+          position: newCenter,
+          map: this.map,
+          title: "selected location",
+        });
+      }
     },
 
     async loadAllNearbyPlace() {

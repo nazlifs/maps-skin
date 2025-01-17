@@ -5,7 +5,7 @@
     </h1>
 
     <div class="max-w-4xl mx-auto p-6 rounded-lg shadow-lg">
-      <MapForm @update-location="updateLocation" />
+      <MapForm :moveToLocation="moveToLocationHandler" />
     </div>
 
     <div class="mt-3">
@@ -31,8 +31,9 @@ export default {
     };
   },
   methods: {
-    updateLocation(newLocation) {
-      this.currentLocation = newLocation;
+    moveToLocationHandler(lat, lng) {
+      console.log(`Navigating to latitude: ${lat}, longitude: ${lng}`);
+      // Implementasikan logika navigasi di sini
     },
   },
 };
