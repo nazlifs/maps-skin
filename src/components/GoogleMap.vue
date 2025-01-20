@@ -27,6 +27,7 @@ export default {
     return {
       map: null,
       markers: [],
+      circle: null,
       accommodations: [],
       transportMarkers: [],
     };
@@ -34,6 +35,7 @@ export default {
   watch: {
     location(newLocation) {
       this.moveToLocation(newLocation.lat, newLocation.lng);
+      this.updateCircle(newLocation);
     },
   },
 
@@ -76,7 +78,7 @@ export default {
     initializeMap(styles) {
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: this.center,
-        zoom: 17,
+        zoom: 14,
         styles: styles,
       });
 
@@ -86,10 +88,29 @@ export default {
         title: "Your Location",
       });
 
+      this.drawCircle(this.center, 1000);
       this.loadAllNearbyPlace();
 
       this.map.addListener("idle", () => {
         this.updateVisibleMarkers();
+      });
+    },
+
+    drawCircle(center, radius) {
+      if (this.circle) {
+        this.circle.setMap(null);
+      }
+      console.log("drawing circle at", center, "with radius", radius);
+
+      this.circle = new google.maps.Circle({
+        strokeColor: "#4938fd",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#4938fd",
+        fillOpacity: 0.35,
+        map: this.map,
+        center: center,
+        radius: radius,
       });
     },
 
@@ -102,6 +123,7 @@ export default {
         map: this.map,
         title: "selected location",
       });
+      this.updateCircle(newCenter);
     },
 
     async loadAllNearbyPlace() {
@@ -120,7 +142,7 @@ export default {
         service.nearbySearch(
           {
             location: this.center,
-            radius: 2000,
+            radius: 1000,
             type:
               // "hospital",
               // "pharmacy",
