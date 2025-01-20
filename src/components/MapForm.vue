@@ -42,12 +42,7 @@
 
 <script>
 export default {
-  props: {
-    moveToLocation: {
-      type: Function,
-      required: true,
-    },
-  },
+  name: "MapForm",
   data() {
     return {
       searchQuery: "",
@@ -96,7 +91,7 @@ export default {
           this.selectedLocation.place_id
         );
         if (location) {
-          await this.moveToLocation(location.lat, location.lng);
+          await this.$emit("location-selected", location);
         }
       } catch (error) {
         console.error("Error during submit:", error);

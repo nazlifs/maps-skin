@@ -5,7 +5,7 @@
     </h1>
 
     <div class="max-w-4xl mx-auto p-6 rounded-lg shadow-lg">
-      <MapForm :moveToLocation="moveToLocationHandler" />
+      <MapForm @location-selected="updateLocation" />
     </div>
 
     <div class="mt-3">
@@ -27,12 +27,12 @@ export default {
   },
   data() {
     return {
-      currentLocation: { lat: -6.2, lng: 106.816666 },
+      currentLocation: { lat: -37.80476169700978, lng: 144.96632398787355 },
     };
   },
   methods: {
-    moveToLocationHandler(lat, lng) {
-      console.log(`Navigating to latitude: ${lat}, longitude: ${lng}`);
+    updateLocation(location) {
+      this.currentLocation = location;
     },
   },
 };
