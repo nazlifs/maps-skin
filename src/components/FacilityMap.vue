@@ -41,33 +41,33 @@
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
   name: "MapForm",
-  data() {
-    return {
-      searchQuery: "",
-      locationOptions: [],
-      selectedLocation: null,
-      isLoading: false,
-    };
-  },
-  methods: {
-    async fetchLocationOptions() {
-      if (this.searchQuery.length > 0) {
+  setup(_, { emit }) {
+    const searchQuery = ref("");
+    const locationOptions = ref([]);
+    const selectedLocation = ref(null);
+    const isLoading = ref(false);
+
+    const fetchLocationOptions = async () => {
+      if (searchQuery.value.length > 0) {
         const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
-        const url = `maps-api/maps/api/place/autocomplete/json?input=${this.searchQuery}&key=${apiKey}`;
+        const url = `maps-api/maps/api/place/autocomplete/json?input=${searchQuery.value}&key=${apiKey}`;
         try {
           const response = await fetch(url);
           const data = await response.json();
-          this.locationOptions = data.predictions || [];
+          locationOptions.value = data.predictions || [];
         } catch (error) {
           console.error("Error fetching location options:", error);
         }
       } else {
-        this.locationOptions = [];
+        locationOptions.value = [];
       }
-    },
-    async fetchLocationDetails(placeId) {
+    };
+
+    const fetchLocationDetails = async (placeId) => {
       const apiKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY;
       const url = `/maps-api/maps/api/place/details/json?place_id=${placeId}&key=${apiKey}`;
       try {
@@ -78,27 +78,42 @@ export default {
         console.error("Error fetching location details:", error);
         return null;
       }
-    },
-    selectLocation(option) {
-      this.selectedLocation = option;
-      this.searchQuery = option.description;
-    },
-    async handleSubmit() {
-      if (!this.selectedLocation) return;
-      this.isLoading = true;
+    };
+
+    const selectLocation = (option) => {
+      selectedLocation.value = option;
+      searchQuery.value = option.description;
+    };
+
+    const handleSubmit = async () => {
+      if (!selectedLocation.value) return;
+      isLoading.value = true;
       try {
-        const location = await this.fetchLocationDetails(
-          this.selectedLocation.place_id
+        const location = await fetchLocationDetails(
+          selectedLocation.value.place_id
         );
         if (location) {
-          await this.$emit("location-selected", location);
+          emit("location-selected", location);
         }
       } catch (error) {
         console.error("Error during submit:", error);
       } finally {
-        this.isLoading = false;
+        isLoading.value = false;
+        searchQuery.value = "";
+        locationOptions.value = [];
+        selectLocation.value = null;
       }
-    },
+    };
+
+    return {
+      searchQuery,
+      locationOptions,
+      selectedLocation,
+      isLoading,
+      fetchLocationOptions,
+      selectLocation,
+      handleSubmit,
+    };
   },
 };
 </script>

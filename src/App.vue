@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import MapForm from "./components/MapForm.vue";
+import MapForm from "./components/FacilityMap.vue";
 import GoogleMap from "./components/GoogleMap.vue";
 import "font-awesome/css/font-awesome.css";
 

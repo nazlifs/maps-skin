@@ -10,8 +10,6 @@ import customStyles from "./mapStyle";
 import Homestay from "../assets/icons/homestay.svg";
 import Apartment from "../assets/icons/apartment.svg";
 import RoomingHouse from "../assets/icons/rooming-house.svg";
-import { Loader } from "@googlemaps/js-api-loader";
-import MapForm from "./MapForm.vue";
 
 export default {
   name: "GoogleMap",
@@ -20,6 +18,10 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  radius: {
+    type: Number,
+    default: 1000,
   },
   data() {
     return {
