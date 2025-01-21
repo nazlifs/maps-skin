@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="map" style="width: 100%; height: 500px; position: relative"></div>
-    <MapForm :moveToLocation="moveToLocation" />
+    <CircleRadius v-if="center" :center="center" :radius="1000" :map="map" />
   </div>
 </template>
 
@@ -10,22 +10,26 @@ import customStyles from "./mapStyle";
 import Homestay from "../assets/icons/homestay.svg";
 import Apartment from "../assets/icons/apartment.svg";
 import RoomingHouse from "../assets/icons/rooming-house.svg";
+import CircleRadius from "./CircleRadius.vue";
 
 export default {
   name: "GoogleMap",
+  components: {
+    CircleRadius,
+  },
+
   props: {
     location: {
       type: Object,
       required: true,
     },
   },
-  radius: {
-    type: Number,
-    default: 1000,
-  },
+
   data() {
     return {
       map: null,
+      center: null,
+      radius: 1000,
       markers: [],
       circle: null,
       accommodations: [],
@@ -88,29 +92,10 @@ export default {
         title: "Your Location",
       });
 
-      this.drawCircle(this.center, 1000);
       this.loadAllNearbyPlace();
 
       this.map.addListener("idle", () => {
         this.updateVisibleMarkers();
-      });
-    },
-
-    drawCircle(center, radius) {
-      if (this.circle) {
-        this.circle.setMap(null);
-      }
-      console.log("drawing circle at", center, "with radius", radius);
-
-      this.circle = new google.maps.Circle({
-        strokeColor: "#4938fd",
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: "#4938fd",
-        fillOpacity: 0.35,
-        map: this.map,
-        center: center,
-        radius: radius,
       });
     },
 
@@ -269,10 +254,3 @@ export default {
   },
 };
 </script>
-
-<!-- <style scoped>
-#map {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-}
-</style> -->
