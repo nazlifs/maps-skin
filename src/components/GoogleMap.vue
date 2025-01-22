@@ -1,6 +1,7 @@
 <template>
   <div>
     <div id="map" style="width: 100%; height: 500px; position: relative"></div>
+    <MapForm :moveToLocation="moveToLocation" />
   </div>
 </template>
 
@@ -12,13 +13,28 @@ import RoomingHouse from "../assets/icons/rooming-house.svg";
 
 export default {
   name: "GoogleMap",
+  props: {
+    location: {
+      type: Object,
+      required: true,
+    },
+  },
+  radius: {
+    type: Number,
+    default: 1000,
+  },
   data() {
     return {
       map: null,
-      center: { lat: -6.2, lng: 106.816666 },
       markers: [],
       accommodations: [],
+      transportMarkers: [],
     };
+  },
+  watch: {
+    location(newLocation) {
+      this.moveToLocation(newLocation.lat, newLocation.lng);
+    },
   },
 
   mounted() {
@@ -28,7 +44,7 @@ export default {
       const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${
         import.meta.env.VITE_GOOGLE_MAP_API_KEY
-      }&callback=initMap`;
+      }&libraries=places&callback=initMap`;
       script.async = true;
       script.defer = true;
       document.head.appendChild(script);
@@ -60,7 +76,7 @@ export default {
     initializeMap(styles) {
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: this.center,
-        zoom: 14,
+        zoom: 17,
         styles: styles,
       });
 
@@ -70,12 +86,86 @@ export default {
         title: "Your Location",
       });
 
-      this.loadAccomodations();
+      this.loadAllNearbyPlace();
 
       this.map.addListener("idle", () => {
         this.updateVisibleMarkers();
       });
     },
+
+    moveToLocation(lat, lng) {
+      const newCenter = { lat, lng };
+      this.map.setCenter(newCenter);
+
+      new google.maps.Marker({
+        position: newCenter,
+        map: this.map,
+        title: "selected location",
+      });
+    },
+
+    async loadAllNearbyPlace() {
+      await this.loadAccomodations();
+      await this.loadpublicTransport();
+    },
+
+    async loadpublicTransport() {
+      try {
+        if (!google || !google.maps || !google.maps.places) {
+          throw new Error("Google Maps Places API tidak tersedia.");
+        }
+        const service = new google.maps.places.PlacesService(this.map);
+
+        console.log("center location:", this.center);
+        service.nearbySearch(
+          {
+            location: this.center,
+            radius: 2000,
+            type:
+              // "hospital",
+              // "pharmacy",
+              "transit_station",
+            // "subway_station",
+            // "train_station",
+          },
+          (result, status) => {
+            console.log("google places status:", status);
+            console.log("data marker", result);
+
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              this.transportMarkers.forEach((marker) => marker.setMap(null));
+              this.transportMarkers = [];
+
+              if (result && Array.isArray(result)) {
+                result.forEach((place) => {
+                  if (place.geometry && place.geometry.location) {
+                    const marker = new google.maps.Marker({
+                      position: place.geometry.location,
+                      map: this.map,
+                      title: place.name,
+                      icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                    });
+                    this.transportMarkers.push(marker);
+                  }
+                });
+              } else {
+                console.error("Data transport tidak valid:", result);
+                alert(
+                  "Data transport tidak sesuai dengan format yang diharapkan."
+                );
+              }
+            } else {
+              console.error(`Error fetching transport data: ${status}`);
+              alert(`Terjadi kesalahan dalam mencari transportasi: ${status}`);
+            }
+          }
+        );
+      } catch (error) {
+        console.error("Error fetching transport", error);
+        alert("Terjadi kesalahan saat mengambil data transportasi.");
+      }
+    },
+
     async loadAccomodations() {
       try {
         const response = await fetch(

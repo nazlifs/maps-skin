@@ -5,7 +5,7 @@
     </h1>
 
     <div class="max-w-4xl mx-auto p-6 rounded-lg shadow-lg">
-      <MapForm @update-location="updateLocation" />
+      <MapForm @location-selected="updateLocation" />
     </div>
 
     <div class="mt-3">
@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import MapForm from "./components/MapForm.vue";
+import MapForm from "./components/FacilityMap.vue";
 import GoogleMap from "./components/GoogleMap.vue";
 import "font-awesome/css/font-awesome.css";
 
@@ -27,12 +27,12 @@ export default {
   },
   data() {
     return {
-      currentLocation: { lat: -6.2, lng: 106.816666 },
+      currentLocation: { lat: -37.80476169700978, lng: 144.96632398787355 },
     };
   },
   methods: {
-    updateLocation(newLocation) {
-      this.currentLocation = newLocation;
+    updateLocation(location) {
+      this.currentLocation = location;
     },
   },
 };
