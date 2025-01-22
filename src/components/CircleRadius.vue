@@ -80,12 +80,6 @@ export default {
         radius: this.selectedRadius * 1000,
       });
     },
-    removeCircle() {
-      if (this.circle) {
-        this.circle.setMap(null);
-        this.circle = null;
-      }
-    },
   },
   // beforeUnmount() {
   //   if (this.circle) {
