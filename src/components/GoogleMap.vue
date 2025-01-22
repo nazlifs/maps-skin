@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div id="map" style="width: 100%; height: 500px; position: relative"></div>
     <CircleRadius v-if="center" :center="center" :radius="1000" :map="map" />
+    <div id="map" style="width: 100%; height: 500px; position: relative"></div>
   </div>
 </template>
 
@@ -29,7 +29,7 @@ export default {
     return {
       map: null,
       center: null,
-      radius: 1000,
+      // radius: 1000,
       markers: [],
       circle: null,
       accommodations: [],
@@ -39,7 +39,6 @@ export default {
   watch: {
     location(newLocation) {
       this.moveToLocation(newLocation.lat, newLocation.lng);
-      this.updateCircle(newLocation);
     },
   },
 
@@ -108,7 +107,6 @@ export default {
         map: this.map,
         title: "selected location",
       });
-      this.updateCircle(newCenter);
     },
 
     async loadAllNearbyPlace() {

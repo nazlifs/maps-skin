@@ -7,16 +7,16 @@
       Tampilkan Radius
     </button>
     <select
-      class="bg-gray-800 text-white hover:text-gray-200"
       v-if="showSelect"
       v-model="selectedRadius"
       @change="updateRadius"
+      class="bg-gray-800 text-white hover:text-gray-200"
     >
       <option
-        class="bg-gray-800 text-white hover:text-gray-200"
         v-for="radius in radiuss"
         :key="radius"
         :value="radius"
+        class="bg-gray-800 text-white"
       >
         {{ radius }} km
       </option>
@@ -32,10 +32,6 @@ export default {
       type: Object,
       required: true,
     },
-    radius: {
-      type: Number,
-      required: true,
-    },
     map: {
       type: Object,
       required: true,
@@ -43,35 +39,36 @@ export default {
   },
   data() {
     return {
-      circle: null,
       showSelect: false,
-      isDrawing: false,
-      selectedRadius: this.radius / 1000,
+      selectedRadius: 1,
       radiuss: Array.from({ length: 20 }, (_, i) => i + 1),
+      circle: null,
     };
   },
+  watch: {
+    center: {
+      immediate: true,
+      handler(newCenter) {
+        this.updateCircle(newCenter);
+      },
+    },
+  },
   mounted() {
-    if (window.google && this.map) {
-      this.drawCircle();
-    } else {
-      const checkGoogleInterval = setInterval(() => {
-        if (window.google && this.map) {
-          this.drawCircle();
-          clearInterval(checkGoogleInterval);
-        }
-      }, 100);
-    }
+    this.updateCircle();
   },
   methods: {
     toggleSelect() {
       this.showSelect = !this.showSelect;
     },
-    drawCircle() {
+    updateRadius() {
+      this.updateCircle();
+    },
+    updateCircle() {
       if (this.circle) {
-        console.log("menghapus lingkaran sebelumnya", this.circle);
         this.circle.setMap(null);
         this.circle = null;
       }
+
       this.circle = new google.maps.Circle({
         strokeColor: "#4938fd",
         strokeOpacity: 0.8,
@@ -82,12 +79,18 @@ export default {
         center: this.center,
         radius: this.selectedRadius * 1000,
       });
-      console.log("lingkaran baru dibuat:", this.circle);
-      this.isDrawing = false;
     },
-    updateRadius() {
-      this.drawCircle();
+    removeCircle() {
+      if (this.circle) {
+        this.circle.setMap(null);
+        this.circle = null;
+      }
     },
   },
+  // beforeUnmount() {
+  //   if (this.circle) {
+  //     this.circle.setMap(null);
+  //   }
+  // },
 };
 </script>
