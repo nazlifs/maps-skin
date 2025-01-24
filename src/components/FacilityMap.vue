@@ -44,7 +44,7 @@
 import { ref } from "vue";
 
 export default {
-  name: "MapForm",
+  name: "FacilityMap",
   setup(_, { emit }) {
     const searchQuery = ref("");
     const locationOptions = ref([]);

@@ -1,7 +1,7 @@
 <template>
   <div>
+    <CircleRadius v-if="center" :center="center" :radius="1000" :map="map" />
     <div id="map" style="width: 100%; height: 500px; position: relative"></div>
-    <MapForm :moveToLocation="moveToLocation" />
   </div>
 </template>
 
@@ -10,23 +10,28 @@ import customStyles from "./mapStyle";
 import Homestay from "../assets/icons/homestay.svg";
 import Apartment from "../assets/icons/apartment.svg";
 import RoomingHouse from "../assets/icons/rooming-house.svg";
+import CircleRadius from "./CircleRadius.vue";
 
 export default {
   name: "GoogleMap",
+  components: {
+    CircleRadius,
+  },
+
   props: {
     location: {
       type: Object,
       required: true,
     },
   },
-  radius: {
-    type: Number,
-    default: 1000,
-  },
+
   data() {
     return {
       map: null,
+      center: null,
+      // radius: 1000,
       markers: [],
+      circle: null,
       accommodations: [],
       transportMarkers: [],
     };
@@ -76,7 +81,7 @@ export default {
     initializeMap(styles) {
       this.map = new google.maps.Map(document.getElementById("map"), {
         center: this.center,
-        zoom: 17,
+        zoom: 14,
         styles: styles,
       });
 
@@ -120,7 +125,7 @@ export default {
         service.nearbySearch(
           {
             location: this.center,
-            radius: 2000,
+            radius: 1000,
             type:
               // "hospital",
               // "pharmacy",
@@ -247,10 +252,3 @@ export default {
   },
 };
 </script>
-
-<!-- <style scoped>
-#map {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-}
-</style> -->

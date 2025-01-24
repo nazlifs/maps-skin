@@ -5,7 +5,7 @@
     </h1>
 
     <div class="max-w-4xl mx-auto p-6 rounded-lg shadow-lg">
-      <MapForm @location-selected="updateLocation" />
+      <FacilityMap @location-selected="updateLocation" />
     </div>
 
     <div class="mt-3">
@@ -15,14 +15,14 @@
 </template>
 
 <script>
-import MapForm from "./components/FacilityMap.vue";
+import FacilityMap from "./components/FacilityMap.vue";
 import GoogleMap from "./components/GoogleMap.vue";
 import "font-awesome/css/font-awesome.css";
 
 export default {
   name: "App",
   components: {
-    MapForm,
+    FacilityMap,
     GoogleMap,
   },
   data() {
