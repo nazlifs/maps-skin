@@ -85,6 +85,6 @@ export default {
   //   if (this.circle) {
   //     this.circle.setMap(null);
   //   }
-  // },
+  // },...
 };
 </script>
