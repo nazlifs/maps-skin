@@ -78,6 +78,7 @@ export default {
         map: this.map,
         center: this.center,
         radius: this.selectedRadius * 1000,
+        clickable: false,
       });
     },
   },
